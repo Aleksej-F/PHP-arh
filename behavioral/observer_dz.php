@@ -107,25 +107,28 @@ class Subject implements \SplSubject
  */
 class ConcreteObserverA implements \SplObserver
 {
+    private $name;
+    private $email;
+    private $experience;
+    
+    public function __construct( $name, $email, $experience)
+    {
+
+        $this->name = $name;
+        $this->email = $email;
+        $this->experience = $experience;
+    }
+    
     public function update(\SplSubject $subject) : void
     {
 
-        if ($subject->state < 3) {
-            echo "ConcreteObserverA: Reacted to the event.<br/>";
-        }
+            $name = $this->name;
+            echo "Получено уведомление:  $name <br/>";
+       
     }
 }
 
-class ConcreteObserverB implements \SplObserver
-{
-    public function update(\SplSubject $subject) : void
-    {
 
-        if ($subject->state == 0 || $subject->state >= 2) {
-            echo "ConcreteObserverB: Reacted to the event.<br/>";
-        }
-    }
-}
 
 /**
  * Клиентский код.
@@ -133,15 +136,18 @@ class ConcreteObserverB implements \SplObserver
 
 $subject = new Subject();
 
-$o1 = new ConcreteObserverA();
+$o1 = new ConcreteObserverA("Alexs","ffff","1");
 $subject->attach($o1);
 
-$o2 = new ConcreteObserverB();
+$o2 = new ConcreteObserverA("Nikolay","rrrr","3");
 $subject->attach($o2);
 
-$subject->someBusinessLogic();
+$o3 = new ConcreteObserverA("Andrey","yyyy","4");
+$subject->attach($o3);
+
 $subject->someBusinessLogic();
 
+//отписался от получения уведомлений
 $subject->detach($o2);
 
 $subject->someBusinessLogic();
