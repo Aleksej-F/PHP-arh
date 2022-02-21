@@ -1,30 +1,19 @@
 <?php
 
-/**
- * Контекст определяет интерфейс, представляющий интерес для клиентов.
- */
+
 class Context
 {
-    /**
-     * @var Strategy Контекст хранит ссылку на один из объектов Стратегии.
-     * Контекст не знает конкретного класса стратегии. Он должен работать со
-     * всеми стратегиями через интерфейс Стратегии.
-     */
+    
     private $strategy;
 
-    /**
-     * Обычно Контекст принимает стратегию через конструктор, а также
-     * предоставляет сеттер для её изменения во время выполнения.
-     */
+    
     public function __construct(Strategy $strategy)
     {
 
         $this->strategy = $strategy;
     }
 
-    /**
-     * Обычно Контекст позволяет заменить объект Стратегии во время выполнения.
-     */
+ 
     public function setStrategy(Strategy $strategy)
     {
 
@@ -35,20 +24,14 @@ class Context
      * Вместо того, чтобы самостоятельно реализовывать множественные версии
      * алгоритма, Контекст делегирует некоторую работу объекту Стратегии.
      */
-    public function doSomeBusinessLogic() : void
+    public function doSomeBusinessLogic($summ, $phone) 
     {
 
         // ...
 
-        echo "Context: Sorting data using the strategy (not sure how it'll do it)\n";
-        $result = $this->strategy->doAlgorithm([
-            "a",
-            "b",
-            "c",
-            "d",
-            "e",
-        ]);
-        echo implode(",", $result) . "\n";
+        echo "Проводим оплату<br/>";
+        $result = $this->strategy->doAlgorithm($summ, $phone);
+        echo "Оплата выполнена через: $result" . "<br/>";
 
         // ...
     }
@@ -63,32 +46,40 @@ class Context
  */
 interface Strategy
 {
-    public function doAlgorithm(array $data) : array;
+    public function doAlgorithm($summ, $phone);
 }
 
 /**
  * Конкретные Стратегии реализуют алгоритм, следуя базовому интерфейсу
  * Стратегии. Этот интерфейс делает их взаимозаменяемыми в Контексте.
  */
-class ConcreteStrategyA implements Strategy
+class StrategyPaymentQiwi implements Strategy
 {
-    public function doAlgorithm(array $data) : array
+    public function doAlgorithm( $summ, $phone) 
     {
 
-        sort($data);
+        return "Qiwi сумма $summ, -   $phone";
 
-        return $data;
+       
     }
 }
 
-class ConcreteStrategyB implements Strategy
+class StrategyPaymentYandex implements Strategy
 {
-    public function doAlgorithm(array $data) : array
+    public function doAlgorithm($summ, $phone) 
     {
 
-        rsort($data);
+        return "Yandex сумма $summ, -   $phone";
+    }
+}
 
-        return $data;
+class StrategyPaymentWebMoney implements Strategy
+{
+    public function doAlgorithm($summ, $phone) 
+    {
+
+        
+        return "WebMoney сумма $summ, -   $phone";
     }
 }
 
@@ -96,12 +87,18 @@ class ConcreteStrategyB implements Strategy
  * Клиентский код выбирает конкретную стратегию и передаёт её в контекст. Клиент
  * должен знать о различиях между стратегиями, чтобы сделать правильный выбор.
  */
-$context = new Context(new ConcreteStrategyA());
-echo "Client: Strategy is set to normal sorting.\n";
-$context->doSomeBusinessLogic();
+$context = new Context(new StrategyPaymentQiwi());
+echo "Оплата Qiwi.<br/>";
+$context->doSomeBusinessLogic(1000, 545454545);
 
-echo "\n";
+echo "<br/>";
 
-echo "Client: Strategy is set to reverse sorting.\n";
-$context->setStrategy(new ConcreteStrategyB());
-$context->doSomeBusinessLogic();
+echo "Оплата Yandex.<br/>";
+$context->setStrategy(new StrategyPaymentYandex());
+$context->doSomeBusinessLogic(1200, 6776767);
+
+echo "<br/>";
+
+echo "Оплата WebMoney.<br/>";
+$context->setStrategy(new StrategyPaymentWebMoney());
+$context->doSomeBusinessLogic(1500, 989898);
