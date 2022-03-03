@@ -8,6 +8,8 @@ use Model\Entity;
 
 class User
 {
+    protected $user = [];
+    
     /**
      * Получаем пользователя по идентификатору
      *
@@ -16,9 +18,12 @@ class User
      */
     public function getById(int $id): ?Entity\User
     {
-        foreach ($this->getDataFromSource(['id' => $id]) as $user) {
-            return $this->createUser($user);
-        }
+        if (!isset($this->user)){
+             foreach ($this->getDataFromSource(['id' => $id]) as $user) {
+            return $this->user = $this->createUser($user);
+        } 
+        } else {return $this->user;}
+       
 
         return null;
     }
@@ -31,11 +36,12 @@ class User
      */
     public function getByLogin(string $login): ?Entity\User
     {
+        if (!isset($this->user)){
         foreach ($this->getDataFromSource(['login' => $login]) as $user) {
             if ($user['login'] === $login) {
-                return $this->createUser($user);
+                return $this->user = $this->createUser($user);
             }
-        }
+        }} else {return $this->user;}
 
         return null;
     }

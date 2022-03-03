@@ -8,6 +8,7 @@ use Model\Entity;
 
 class Product
 {
+    protected $products = [];
     /**
      * Поиск продуктов по массиву id
      *
@@ -20,12 +21,13 @@ class Product
             return [];
         }
 
-        $productList = [];
-        foreach ($this->getDataFromSource(['id' => $ids]) as $item) {
-            $productList[] = new Entity\Product($item['id'], $item['name'], $item['price']);
+        if (!isset($this->products)){
+            $productList = [];
+            foreach ($this->getDataFromSource(['id' => $ids]) as $item) {
+                $productList[] = new Entity\Product($item['id'], $item['name'], $item['price']);
+            }
         }
-
-        return $productList;
+        return $this->products = $productList;
     }
 
     /**
